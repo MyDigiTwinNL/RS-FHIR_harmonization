@@ -1,0 +1,27 @@
+(
+    {
+        "resourceType": "ResearchSubject",
+        "id": $resourceId('hl7-research-subject'),
+        "text": {
+            "status": "generated",
+            "div": "<div xmlns=\"http://www.w3.org/1999/xhtml\">Undefined</div>"
+        },
+        "identifier": {
+            "type": {
+                "text": "Subject id"
+            },
+            "value": "nl-core-patient-1234"
+        },
+        "period": {
+            "start": $dateOfInclusion(),
+            "end": $dateOfLastResponse()
+        },
+        "status": "candidate",
+        "study": {
+            "reference": $idToUUID('hl7-research-study-'&$studyName())
+        },
+        "individual": {
+            "reference": $idToUUID($resourceId('nl-core-patient'))
+        }
+    }
+)

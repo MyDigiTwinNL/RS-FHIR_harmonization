@@ -1,0 +1,7 @@
+{
+    "Column2": [{"1a":"samplecsv/bigfiles/a1_data.csv"},{"2a":"samplecsv/bigfiles/a2_data.csv"},{"3a":"samplecsv/bigfiles/a3_data.csv"}],
+    "Column3": [{"1a":"samplecsv/bigfiles/a1_data.csv"},{"2a":"samplecsv/bigfiles/a2_data.csv"},{"3a":"samplecsv/bigfiles/a3_data.csv"}],
+    "Column10": [{"2b":"samplecsv/bigfiles/a1_data.csv"},{"2c":"samplecsv/bigfiles/a2_data.csv"},{"2d":"samplecsv/bigfiles/a3_data.csv"}],
+    "Column12": [{"3a":"samplecsv/bigfiles/a1_data.csv"},{"3b":"samplecsv/bigfiles/a2_data.csv"},{"3c":"samplecsv/bigfiles/a3_data.csv"}]
+}
+  

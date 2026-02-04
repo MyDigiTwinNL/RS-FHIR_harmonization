@@ -1,0 +1,89 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <title>FHIR mapping live viewer</title>
+    <!-- Include Bootstrap CSS -->
+    <link
+      rel="stylesheet"
+      href="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0/css/bootstrap.min.css"
+    />
+
+    <link rel="stylesheet" type="text/css" href="./styles.css">
+  </head> 
+
+  <body>
+    <!-- Bootstrap Modal Dialog -->
+    <div class="modal" id="selectionModal" tabindex="-1" role="dialog">
+      <div class="modal-dialog" role="document">
+        <div class="modal-content">
+          <div class="modal-header">
+            <h5 class="modal-title">Select Options</h5>
+            <button
+              type="button"
+              class="close"
+              data-dismiss="modal"
+              aria-label="Close"
+            >
+              <span aria-hidden="true">&times;</span>
+            </button>
+          </div>
+          <div class="modal-body">
+            <!-- Checkbox options will be inserted here dynamically -->
+          </div>
+          <div class="modal-footer">
+            <button
+              type="button"
+              class="btn btn-secondary"
+              data-dismiss="modal"
+            >
+              Close
+            </button>
+            <button
+              type="button"
+              class="btn btn-primary"
+              onclick="getSelectedOptions()"
+            >
+              Continue
+            </button>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div class="container-fluid">
+      <div class="top-bar">
+        <input type="file" id="file-input" class="file-input" accept=".json" />
+        <!-- Content of the top bar goes here -->
+        <button onclick="handleFile()" class="btn btn-primary">
+          Open input file
+        </button>
+        <!--<button onclick="showSelectionDialog()" class="btn btn-primary">
+          Select mapping templates
+        </button>-->
+        <button onclick="sendCommand()" class="btn btn-primary">
+          Transform
+        </button>
+      </div>
+
+      <div class="split-container">
+        <div id="editor1" class="editor"></div>
+        <div class="split">
+          <div id="outputtree" class="json-container"></div>
+        </div>
+      </div>
+
+      <div class="bottom-bar">
+        <div id="status"></div>
+        <span id="status-text"></span>
+      </div>
+    </div>
+
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+    <script src="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0/js/bootstrap.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/ace/1.4.12/ace.js"></script>
+    <script type="text/javascript" src="./libs/jsonview.js"></script>
+
+    <script src="./script.js"></script>
+            
+  </body>
+</html>

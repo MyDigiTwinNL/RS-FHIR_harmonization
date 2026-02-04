@@ -1,0 +1,209 @@
+the folder 'samplecsv/bigfiles' (folder included in the .gitignore)
+
+python -m samplecsv.generate_sample_csv_datafiles  N C R
+
+For example, for generating ten CSV files, each one with 150000 rows and 200 columns (variables)
+python  -m samplecsv.generate_sample_csv_datafiles  10 200 150000
+
+generating one CSV files, each one with 15000 rows and 15 columns (variables)
+python  -m samplecsv.generate_sample_csv_datafiles  1 15 15000
+
+
+
+To transform the sample data files (or the actual files), 
+
+python -m lifelinescsv_to_icdf.cdfgenerator <file with ids> <config file> <output folder>
+
+1. you must first define the location of the different assessments of the variables you need to process.
+
+file with ids: /home/hmo/RS_CSV2CDF/dummy_practice/samplecsv/bigfiles/pseudo_ids.csv
+config file: 
+
+python -m lifelinescsv_to_icdf.cdfgenerator /home/umcg-hcadavid/temporal-data/csv2csd/ids.csv /home/umcg-hcadavid/temporal-data/csv2csd/csv2csdconfig.json /home/umcg-hcadavid/temporal-data/pheno_lifelines_csd_out
+
+
+python -m lifelinescsv_to_icdf.cdfgenerator /home/hmo/RS_CSV2CDF/dummy_practice/samplecsv/bigfiles/pseudo_ids.csv /home/hmo/RS_CSV2CDF/dummy_practice/sample-configs/one-csv-15-vars-config.json /home/hmo/RS_CSV2CDF/dummy_practice/dummy_csd_out
+
+
+MDT PoC variables:
+age, sex,eGFR, albumin, HDL cholesterol, LDL cholesterol, total cholesterol,HbA1c, hypertension history, type 2 diabetes history, creatinine, sys-tolic blood pressure, diastolic blood pressure, smoking history, smok-ing quantity.
+
+CVD outcome definition:
+stroke, MI, and HF
+
+
+
+
+for /home/hmo/LifelinesCSV2CDF/samplecsv/generate_sample_csv_datafiles.py
+
+# Generated csv file containing the variables of interest
+python rs_fl_variables_csv_gen.py \
+  --in /home/hmo/RS_CSV2CDF/data_csv/RS_ergo_tabular_05032023.csv \
+  --out /home/hmo/RS_CSV2CDF/data_csv/RS_ergo_tabular_fl_selected_var_population.csv \
+  --codebook /home/hmo/RS_CSV2CDF/data_csv/rs_cvd_variables.xlsx
+
+
+
+# Preparing config file before Converting csv file to CDF files
+
+
+python rs_cdf_config_gen.py \
+  --csv /home/hmo/RS_CSV2CDF/data_csv/RS_ergo_tabular_fl_selected_var_population.csv \
+  --id-col ergoid \
+  --ids-out /home/hmo/RS_CSV2CDF/data_csv/ids.csv \
+  --config-out /home/hmo/RS_CSV2CDF/data_csv/rs_csv_var_config.json \
+  --assessment a1
+  --csv-normalized-out /home/hmo/RS_CSV2CDF/data_csv/RS_ergo_tabular_with_ppid.csv
+
+
+# Converting csv file to CDF files
+
+python -m lifelinescsv_to_icdf.cdfgenerator /home/hmo/RS_CSV2CDF/data_csv/ids.csv /home/hmo/RS_CSV2CDF/data_csv/rs_csv_var_config.json /home/hmo/RS_CSV2CDF/data_cdf
+
+
+
+# FHIR transform
+
+npm run transform -- ./fhirvalidation/sampleinputs/input-p1234.json -o ./out
+npm run transform -- ./fhirvalidation/sampleinputs/input-pa2739b7129c7319d73189273817318973822-follow_up_conditions_w_undefined_onset_date.json -o ./out
+
+npm run transform -- ./fhirvalidation/sampleinputs/input-p675432-hf-diab-followup-missing-date.json -o ./out
+
+npm run transform -- ./fhirvalidation/sampleinputs -o /home/hmo/CDF2Medmij-Mapping-tool/fhirvalidation/temp_out
+
+
+# CDF files path: /home/hmo/RS_CSV2CDF/data_cdf
+# Predictors will commonly be used with Lifelines: sexe
+age
+sbp
+dbp
+HDL_mmol
+LDL_mmol_centri
+TC_mmol
+GFR
+creat_umol
+smoking
+smoking
+smoking
+prev_DM
+prev_HT
+
+# outcome related varaibles: stroke_date
+stroke_date
+inc_hf_2018
+enddat_hf
+Inc_MI
+enddat_MI
+CVD_STATUS
+CVD_ONSET_DATE
+
+
+# CDF2Medmji FHIR data harmonization for Rotterdam Study
+## for /home/hmo/CDF2Medmij-Mapping-tool/src folder
+## Files you do not need to change
+These are generic and can be reused as-is:
+functionsCatalog.ts – generic CDF access (inputValue, inputValues, proxy helpers).
+inputSingleton.ts – handles reading a CDF JSON file.
+mapper.ts – JSONata engine, loading templates + registering functions (we will only extend its imports, see below).
+transformationParameters.ts – namespace UUID for stable resource IDs.
+unexpectedInputException.ts – error helpers.
+fhir-resource-interfaces/* – the TypeScript interfaces for FHIR resources.
+All zib-2017-mappings/*.jsonata templates – these are dataset-agnostic and can be reused.
+So the Lifelines pipeline remains intact.
+
+## Update ts files 
+src/
+  rotterdam/
+    Patient.ts
+    BloodPressure.ts
+    HDLCholesterol.ts
+    LDLCholesterol.ts
+    TotalCholesterol.ts
+    eGFR.ts
+    Diabetes.ts
+    TobaccoUse.ts
+    HeartFailure.ts
+    Stroke.ts
+    MyocardialInfarction.ts
+    CardioVascularDisease.ts   // composite incident CVD
+    HistoryHTN.ts              // optional (prevalent HTN)
+    HistoryDM.ts               // optional (prevalent DM)
+    HistoryCVD.ts              // optional (prev_MI, prev_CVATIA, prev_HF)
+    rsFunctions.ts             // helper functions for RS
+
+
+## From your RS CDF example: 
+
+IDs / baseline:
+
+PROJECT_PSEUDO_ID.a1
+
+date_int_cen.a1 (baseline date, DD-MM-YYYY)
+
+gebdatum.a1 (birth date, DD-MM-YYYY)
+
+sex_mapped.a1 (e.g. female)
+
+age_at_baseline_years_derived.a1
+
+Predictors:
+
+sbp.a1, dbp.a1
+
+HDL_mmol.a1
+
+LDL_mmol_chosen.a1 (your chosen LDL variable)
+
+TC_mmol.a1
+
+GFR.a1
+
+smoking_status.a1
+
+prev_HT_bool.a1
+
+prev_DM_bool.a1
+
+etc.
+
+Outcomes:
+
+incident_mi_bool.a1, incident_mi_date_derived.a1
+
+incident_stroke_bool.a1, incident_stroke_date_derived.a1
+
+incident_hf_bool.a1, incident_hf_date_derived.a1
+
+incident_cvd_composite_bool.a1, incident_cvd_date_derived.a1
+
+
+##
+Where age is handled
+
+Age should be computed during feature engineering, not in FHIR:
+
+age = (baseline_date - birthdate).days / 365.25
+
+
+As is already done in your prepare_rs_outcomes.py + FL preparation pipeline
+
+FHIR Patient resources do not have an “age” attribute.
+FHIR always represents age indirectly as:
+
+birthDate
+
+and the consumer (viewer / model / downstream code) computes age when needed.
+
+This is also how the Lifelines implementation works:
+the predictor “age” is not generated by the FHIR mapping,
+but by the federated learning preprocessing,
+
+
+
+npm run transform:rotterdam -- /home/hmo/RS_CSV2CDF/data_cdf /home/hmo/RS_CSV2CDF/data_fhir
+
+
+
+
+given, (n=14926)
+exclusion, inclusion date available: (n=11732)
